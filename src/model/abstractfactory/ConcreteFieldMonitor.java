@@ -92,4 +92,6 @@ public class ConcreteFieldMonitor extends AbstractField {
     public void setLastCell(boolean lastCell) {
         this.lastCell = lastCell;
     }
+
+    public int getMoveType() { return moveType; }
 }

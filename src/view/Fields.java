@@ -72,6 +72,9 @@ public class Fields extends JPanel implements Observer {
     public void updateStartButton(boolean status) {}
 
     @Override
+    public void updateStopButton(boolean status) {}
+
+    @Override
     public void updateEndButton(boolean status) {}
 
     @Override

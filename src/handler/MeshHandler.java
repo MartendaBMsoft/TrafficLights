@@ -62,6 +62,7 @@ public class MeshHandler implements Handler {
             ex.printStackTrace();
         }
         notifyStartButton(true);
+        notifyStopButton(false);
     }
 
     public String getSimulationType(){
@@ -70,6 +71,7 @@ public class MeshHandler implements Handler {
 
     public void start() {
         notifyStartButton(false);
+        notifyStopButton(true);
         notifyExitButton(true);
         Car newCar = new Car(this);
 
@@ -86,6 +88,7 @@ public class MeshHandler implements Handler {
     public void stop() {
         this.stopped = true;
         notifyStartButton(true);
+        notifyStopButton(false);
         notifyExitButton(false);
     }
 
@@ -172,6 +175,12 @@ public class MeshHandler implements Handler {
     public void notifyStartButton(boolean status) {
         for (Observer observer : observers) {
             observer.updateStartButton(status);
+        }
+    }
+
+    public void notifyStopButton(boolean status) {
+        for (Observer observer : observers) {
+            observer.updateStopButton(status);
         }
     }
 

@@ -5,7 +5,22 @@ public enum CarType {
     CAR_TYPE_UP("resources/images/CAR_TYPE_UP.png", 1),
     CAR_TYPE_RIGHT("resources/images/CAR_TYPE_RIGHT.png", 2),
     CAR_TYPE_DOWN("resources/images/CAR_TYPE_DOWN.png", 3),
-    CAR_TYPE_LEFT("resources/images/CAR_TYPE_LEFT.png", 4);
+    CAR_TYPE_LEFT("resources/images/CAR_TYPE_LEFT.png", 4),
+
+    CAR_YEL_TYPE_UP("resources/images/CAR_YEL_TYPE_UP.png", 21),
+    CAR_YEL_TYPE_RIGHT("resources/images/CAR_YEL_TYPE_RIGHT.png", 22),
+    CAR_YEL_TYPE_DOWN("resources/images/CAR_YEL_TYPE_DOWN.png", 23),
+    CAR_YEL_TYPE_LEFT("resources/images/CAR_YEL_TYPE_LEFT.png", 24),
+
+    CAR_GRE_TYPE_UP("resources/images/CAR_GRE_TYPE_UP.png", 31),
+    CAR_GRE_TYPE_RIGHT("resources/images/CAR_GRE_TYPE_RIGHT.png", 32),
+    CAR_GRE_TYPE_DOWN("resources/images/CAR_GRE_TYPE_DOWN.png", 33),
+    CAR_GRE_TYPE_LEFT("resources/images/CAR_GRE_TYPE_LEFT.png", 34),
+
+    CAR_RED_TYPE_UP("resources/images/CAR_RED_TYPE_UP.png", 41),
+    CAR_RED_TYPE_RIGHT("resources/images/CAR_RED_TYPE_RIGHT.png", 42),
+    CAR_RED_TYPE_DOWN("resources/images/CAR_RED_TYPE_DOWN.png", 43),
+    CAR_RED_TYPE_LEFT("resources/images/CAR_RED_TYPE_LEFT.png", 44);
 
     private String filePath;
     private int type;

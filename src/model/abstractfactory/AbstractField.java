@@ -38,6 +38,8 @@ public abstract class AbstractField {
 
     public abstract void setLastCell(boolean lastCell);
 
+    public abstract int getMoveType();
+
     public abstract void setIcon(ImageIcon icon);
 
     public abstract boolean isStopCell();

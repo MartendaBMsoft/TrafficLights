@@ -11,9 +11,9 @@ public class Car extends Thread {
     private long speed;
     private boolean outOfRoad = false;
     private final MeshHandler meshHandler;
-
     private AbstractField cell;
-    private AbstractField nextCell = new ConcreteFieldSemaphore(0, 0, 0);
+    private AbstractField nextCell;// = new ConcreteFieldSemaphore(0, 0, 0);
+    boolean stopRunning = false;
 
     public Car(MeshHandler meshHandler) {
         this.meshHandler = meshHandler;
@@ -24,9 +24,19 @@ public class Car extends Thread {
     public void run() {
         super.run();
 
-        // TODO
+        while (!stopRunning) {
+            try {
+                sleep(1500 - this.getSpeed());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
-        meshHandler.updateFields();
+            this.moveCar();
+        }
+
+        this.meshHandler.updateFields();
+//        this.meshHandler.updateRoadView(this);
+        this.meshHandler.updateCarCount(this);
     }
 
     private boolean checkLastCell() {
@@ -34,6 +44,44 @@ public class Car extends Thread {
     }
 
     private void moveCar() {
+        this.setCell(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
+
+        if (this.getCell().isLastCell()) {
+            stopRunning = true;
+            return ;
+        }
+
+        int newRow = this.getRow();
+        int newCol = this.getColumn();
+
+        switch (this.getCell().getMoveType()) {
+            case 1: //Up
+                newRow --;
+                break;
+            case 2: //Right
+                newCol ++;
+                break;
+            case 3: //Down
+                newRow ++;
+                break;
+            case 4: //Left
+                newCol --;
+                break;
+        }
+
+        this.setNextCell(meshHandler.getCellAtPosition(newRow, newCol));
+
+        if (this.getNextCell().isStopCell()) {
+//            this.moveCarToIntersectionExit(null);
+            stopRunning = true;
+            return ;
+        }
+
+        if (this.getNextCell().getMoveType() != 0 && this.getNextCell().getCar() == null) {
+            this.setRow(this.getNextCell().getRow());
+            this.setColumn(this.getNextCell().getColumn());
+            this.setCell(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
+        }
 
         updateFront();
     }
@@ -76,6 +124,14 @@ public class Car extends Thread {
         this.cell = cell;
     }
 
+    public AbstractField getNextCell() {
+        return nextCell;
+    }
+
+    public void setNextCell(AbstractField nextCell) {
+        this.nextCell = nextCell;
+    }
+
     public void setOutOfRoad(boolean outOfRoad) {
         this.outOfRoad = outOfRoad;
     }
@@ -83,6 +139,7 @@ public class Car extends Thread {
     public void updateFront() {
         meshHandler.updateRoadView(this);
     }
+
     public boolean setFirstPosition(Integer row, Integer col) {
         AbstractField cell = meshHandler.getCellAtPosition(row, col);
         cell.setCar(this);

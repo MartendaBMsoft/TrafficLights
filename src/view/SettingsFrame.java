@@ -23,6 +23,7 @@ public class SettingsFrame extends JFrame implements Observer {
     JSpinner numeroVeiculos;
     JSpinner timer;
     JButton buttonStart;
+    JButton buttonStop;
     JButton buttonEnd;
     String[] simulationType = {"Semaforo", "Monitor"};
 
@@ -77,6 +78,7 @@ public class SettingsFrame extends JFrame implements Observer {
         buttonsContainer.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
 
         buttonsContainer.add(buttonStart);
+        buttonsContainer.add(buttonStop);
         buttonsContainer.add(buttonEnd);
 
         this.add(fields, BorderLayout.NORTH);
@@ -92,13 +94,21 @@ public class SettingsFrame extends JFrame implements Observer {
     }
 
     private void createButtons() {
-        buttonStart = new JButton("Star");
+        buttonStart = new JButton("Start");
         buttonStart.addActionListener((ActionEvent e) -> {
             threadHandler.setCarsQuantity(Integer.parseInt(numeroVeiculos.getValue() + ""));
             threadHandler.setTimer(Integer.parseInt(timer.getValue() + ""));
             threadHandler.start();
         });
         buttonStart.setEnabled(false);
+
+        buttonStop = new JButton("Stop");
+        buttonStop.addActionListener((ActionEvent e) -> {
+            threadHandler.interrupt();
+            handler.stop();
+        });
+        buttonStop.setEnabled(false);
+        buttonStop.setVisible(false);
 
         buttonEnd = new JButton("Exit");
         buttonEnd.addActionListener((ActionEvent e) -> {
@@ -113,6 +123,11 @@ public class SettingsFrame extends JFrame implements Observer {
     @Override
     public void updateStartButton(boolean status){
         this.buttonStart.setEnabled(status);
+    }
+
+    @Override
+    public void updateStopButton(boolean status){
+        this.buttonStop.setEnabled(status);
     }
 
     @Override

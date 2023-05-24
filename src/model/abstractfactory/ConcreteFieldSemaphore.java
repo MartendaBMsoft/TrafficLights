@@ -68,6 +68,8 @@ public class ConcreteFieldSemaphore extends AbstractField {
         this.lastCell = lastCell;
     }
 
+    public int getMoveType() { return moveType; }
+
     public boolean setCarToGo(Car c) {
         try {
             if (mutex.tryAcquire(c.getSpeed(), TimeUnit.MILLISECONDS)) {
