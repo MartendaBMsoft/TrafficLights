@@ -69,6 +69,10 @@ public class MeshHandler implements Handler {
         return simulationType;
     }
 
+    public void addCars(Car car) {
+        this.cars.add(car);
+    }
+
     public void start() {
         notifyStartButton(false);
         notifyStopButton(true);
@@ -143,7 +147,7 @@ public class MeshHandler implements Handler {
         return this.fields[row][col].getIcon();
     }
 
-    private Integer[] getFirstCell() {
+    public Integer[] getFirstCell() {
         Collections.shuffle(this.mesh.getEntries());
         return this.mesh.getEntries().get(0);
     }

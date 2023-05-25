@@ -38,9 +38,7 @@ public class Car extends Thread {
             this.moveCar();
         }
 
-        this.meshHandler.updateFields();
-//        this.meshHandler.updateRoadView(this);
-        this.meshHandler.updateCarCount(this);
+        meshHandler.updateFields();
     }
 
     private boolean checkLastCell() {
@@ -53,6 +51,10 @@ public class Car extends Thread {
         if (this.getField().isLastField()) {
             stopRunning = true;
             meshHandler.updateCarCount(this);
+            updateFront();
+            field.reset();
+
+            createNewCar();
             return;
        }
 
@@ -71,43 +73,19 @@ public class Car extends Thread {
         field.reset();
         field = c;
 
-//        this.setField(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
-//
-
-//        int newRow = this.getRow();
-//        int newCol = this.getColumn();
-//
-//        switch (this.getField().getMoveType()) {
-//            case 1: //Up
-//                newRow --;
-//                break;
-//            case 2: //Right
-//                newCol ++;
-//                break;
-//            case 3: //Down
-//                newRow ++;
-//                break;
-//            case 4: //Left
-//                newCol --;
-//                break;
-//        }
-//
-//        this.setNextField(meshHandler.getCellAtPosition(newRow, newCol));
-//
-//        if (this.getNextField().isStopCell()) {
-////            this.moveCarToIntersectionExit(null);
-//            stopRunning = true;
-//            return ;
-//        }
-//
-//        if (this.getNextField().getMoveType() != 0 && this.getNextField().getCar() == null) {
-//            this.setRow(this.getNextField().getRow());
-//            this.setColumn(this.getNextField().getColumn());
-//            this.setField(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
-//        }
-//        this.field.reset();
-
         updateFront();
+    }
+
+    private void createNewCar() {
+        Car newCar = new Car(this.meshHandler);
+
+        Integer[] pos = meshHandler.getFirstCell();
+        newCar.setFirstPosition(pos[0], pos[1]);
+
+        this.meshHandler.addCars(newCar);
+        this.meshHandler.notifyCounter();
+        this.meshHandler.updateRoadView(newCar);
+        newCar.start();
     }
 
     private void handleCrossing() {
@@ -121,22 +99,22 @@ public class Car extends Thread {
             pathToExit.add(field);
 
             switch (moveType) {
-                case 9:
+                case 9 -> {
                     intersectionExits.add(meshHandler.getCellAtPosition(field.getRow(), field.getColumn() + 1));
                     pathToAllExits.add(new ArrayList<>(pathToExit));
-                    break;
-                case 10:
+                }
+                case 10 -> {
                     intersectionExits.add(meshHandler.getCellAtPosition(field.getRow() - 1, field.getColumn()));
                     pathToAllExits.add(new ArrayList<>(pathToExit));
-                    break;
-                case 11:
+                }
+                case 11 -> {
                     intersectionExits.add(meshHandler.getCellAtPosition(field.getRow() + 1, field.getColumn()));
                     pathToAllExits.add(new ArrayList<>(pathToExit));
-                    break;
-                case 12:
+                }
+                case 12 -> {
                     intersectionExits.add(meshHandler.getCellAtPosition(field.getRow(), field.getColumn() - 1));
                     pathToAllExits.add(new ArrayList<>(pathToExit));
-                    break;
+                }
             }
             field = getNextField(field);
         }

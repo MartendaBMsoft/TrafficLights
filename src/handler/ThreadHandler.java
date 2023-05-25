@@ -3,11 +3,11 @@ package handler;
 public class ThreadHandler extends Thread {
 
     MeshHandler meshHandler = MeshHandler.getInstance();
-    private int qtdCarros;
+    private int carsQuantity;
     private int timer;
 
     public void setCarsQuantity(int carsQuantity) {
-        this.qtdCarros = carsQuantity;
+        this.carsQuantity = carsQuantity;
     }
 
     public void setTimer(int timer) {
@@ -20,7 +20,7 @@ public class ThreadHandler extends Thread {
 
     @Override
     public void run() {
-        for (int i = 0; i < qtdCarros; i++) {
+        for (int i = 0; i < carsQuantity; i++) {
             if (meshHandler.isStopped()) {
                 stop();
                 break;
