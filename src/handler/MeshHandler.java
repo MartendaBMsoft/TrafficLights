@@ -26,6 +26,11 @@ public class MeshHandler implements Handler {
     private String simulationType;
     private final String filename = "malhas/malha-exemplo-3.txt";
     private boolean stopped = false;
+    private boolean stopEveryone = false;
+
+    public void setStopEveryoneTrue() { this.stopEveryone = true; };
+
+    public boolean isStopEveryone() { return this.stopEveryone; };
 
     private MeshHandler() {
         try {
@@ -91,7 +96,7 @@ public class MeshHandler implements Handler {
     @Override
     public void stop() {
         this.stopped = true;
-        notifyStartButton(true);
+//        notifyStartButton(true);
         notifyStopButton(false);
         notifyExitButton(false);
     }

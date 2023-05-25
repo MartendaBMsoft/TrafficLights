@@ -28,7 +28,7 @@ public class Car extends Thread {
     public void run() {
         super.run();
 
-        while (!stopRunning) {
+        while (!stopRunning && !this.meshHandler.isStopEveryone()) {
             try {
                 sleep(1500 - this.getSpeed());
             } catch (InterruptedException e) {

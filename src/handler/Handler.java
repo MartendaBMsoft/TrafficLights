@@ -6,7 +6,6 @@ import model.Mesh;
 import javax.swing.*;
 
 public interface Handler {
-
 	public void attach(Observer obs);
 
 	public void start() ;
