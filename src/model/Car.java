@@ -2,7 +2,6 @@ package model;
 
 import handler.MeshHandler;
 import model.abstractfactory.AbstractField;
-import model.abstractfactory.ConcreteFieldSemaphore;
 
 public class Car extends Thread {
 
@@ -11,8 +10,8 @@ public class Car extends Thread {
     private long speed;
     private boolean outOfRoad = false;
     private final MeshHandler meshHandler;
-    private AbstractField cell;
-    private AbstractField nextCell;// = new ConcreteFieldSemaphore(0, 0, 0);
+    private AbstractField field;
+    private AbstractField nextField;
     boolean stopRunning = false;
 
     public Car(MeshHandler meshHandler) {
@@ -40,50 +39,104 @@ public class Car extends Thread {
     }
 
     private boolean checkLastCell() {
-        return cell.isLastCell();
+        return field.isLastCell();
     }
 
     private void moveCar() {
-        this.setCell(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
 
-        if (this.getCell().isLastCell()) {
-            stopRunning = true;
-            return ;
-        }
+        AbstractField c = getNextField(this.field);
+        c.setCar(this);
+        this.setColumn(c.getColumn());
+        this.setRow(c.getRow());
+        if (!c.isLastCell())
+            this.nextField = getNextField(c);
 
-        int newRow = this.getRow();
-        int newCol = this.getColumn();
+        field.reset();
+        field = c;
 
-        switch (this.getCell().getMoveType()) {
-            case 1: //Up
-                newRow --;
-                break;
-            case 2: //Right
-                newCol ++;
-                break;
-            case 3: //Down
-                newRow ++;
-                break;
-            case 4: //Left
-                newCol --;
-                break;
-        }
-
-        this.setNextCell(meshHandler.getCellAtPosition(newRow, newCol));
-
-        if (this.getNextCell().isStopCell()) {
-//            this.moveCarToIntersectionExit(null);
-            stopRunning = true;
-            return ;
-        }
-
-        if (this.getNextCell().getMoveType() != 0 && this.getNextCell().getCar() == null) {
-            this.setRow(this.getNextCell().getRow());
-            this.setColumn(this.getNextCell().getColumn());
-            this.setCell(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
-        }
+//        this.setField(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
+//
+//        if (this.getField().isLastCell()) {
+//            stopRunning = true;
+//            return ;
+//        }
+//
+//        int newRow = this.getRow();
+//        int newCol = this.getColumn();
+//
+//        switch (this.getField().getMoveType()) {
+//            case 1: //Up
+//                newRow --;
+//                break;
+//            case 2: //Right
+//                newCol ++;
+//                break;
+//            case 3: //Down
+//                newRow ++;
+//                break;
+//            case 4: //Left
+//                newCol --;
+//                break;
+//        }
+//
+//        this.setNextField(meshHandler.getCellAtPosition(newRow, newCol));
+//
+//        if (this.getNextField().isStopCell()) {
+////            this.moveCarToIntersectionExit(null);
+//            stopRunning = true;
+//            return ;
+//        }
+//
+//        if (this.getNextField().getMoveType() != 0 && this.getNextField().getCar() == null) {
+//            this.setRow(this.getNextField().getRow());
+//            this.setColumn(this.getNextField().getColumn());
+//            this.setField(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
+//        }
+//        this.field.reset();
 
         updateFront();
+    }
+    private AbstractField getNextField(AbstractField cell) {
+        int moveType;
+
+        moveType = getMoveTypeFromFieldNumber(cell);
+
+        switch (moveType) {
+            case 1:
+                this.nextField = meshHandler.getCellAtPosition(cell.getRow() - 1, cell.getColumn());
+                break;
+            case 2:
+                this.nextField = meshHandler.getCellAtPosition(cell.getRow(), cell.getColumn() + 1);
+                break;
+            case 3:
+                this.nextField = meshHandler.getCellAtPosition(cell.getRow() + 1, cell.getColumn());
+                break;
+            case 4:
+                this.nextField = meshHandler.getCellAtPosition(cell.getRow(), cell.getColumn() - 1);
+                break;
+            default:
+                break;
+        }
+
+        return nextField;
+    }
+
+    private int getMoveTypeFromFieldNumber(AbstractField cell) {
+        int moveType;
+        if (cell.getMoveType() > 4 && cell.getMoveType() <= 8) {
+            moveType = cell.getMoveType() - 4;
+        } else if (cell.getMoveType() > 8) {
+            moveType = switch (cell.getMoveType()) {
+                case 9 -> 1;
+                case 10 -> 4;
+                case 11 -> 2;
+                case 12 -> 3;
+                default -> 0;
+            };
+        } else {
+            moveType = cell.getMoveType();
+        }
+        return moveType;
     }
 
     private void moveCarToIntersectionExit(AbstractField c) {
@@ -116,20 +169,20 @@ public class Car extends Thread {
         return speed;
     }
 
-    public AbstractField getCell() {
-        return cell;
+    public AbstractField getField() {
+        return field;
     }
 
-    public void setCell(AbstractField cell) {
-        this.cell = cell;
+    public void setField(AbstractField field) {
+        this.field = field;
     }
 
-    public AbstractField getNextCell() {
-        return nextCell;
+    public AbstractField getNextField() {
+        return nextField;
     }
 
-    public void setNextCell(AbstractField nextCell) {
-        this.nextCell = nextCell;
+    public void setNextField(AbstractField nextField) {
+        this.nextField = nextField;
     }
 
     public void setOutOfRoad(boolean outOfRoad) {
@@ -143,7 +196,7 @@ public class Car extends Thread {
     public boolean setFirstPosition(Integer row, Integer col) {
         AbstractField cell = meshHandler.getCellAtPosition(row, col);
         cell.setCar(this);
-        this.setCell(cell);
+        this.setField(cell);
 
         setRow(row);
         setColumn(col);
