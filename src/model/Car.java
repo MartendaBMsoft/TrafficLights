@@ -2,9 +2,11 @@ package model;
 
 import handler.MeshHandler;
 import model.abstractfactory.AbstractField;
+import model.abstractfactory.ConcreteFieldSemaphore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Car extends Thread {
 
@@ -14,7 +16,7 @@ public class Car extends Thread {
     private boolean outOfRoad = false;
     private final MeshHandler meshHandler;
     private AbstractField field;
-    private AbstractField nextField;
+    private AbstractField nextField = new ConcreteFieldSemaphore(0,0,0);
     boolean stopRunning = false;
 
     public Car(MeshHandler meshHandler) {
@@ -46,16 +48,16 @@ public class Car extends Thread {
     }
 
     private void moveCar() {
+//        this.setField(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
+
         if (this.getField().isLastField()) {
             stopRunning = true;
             meshHandler.updateCarCount(this);
             return;
        }
 
-        if (nextField.isStopField()) {
+        if (getNextField().isStopField()) {
             handleCrossing();
-            stopRunning = true;
-            return ;
         }
 
 
@@ -109,32 +111,31 @@ public class Car extends Thread {
     }
 
     private void handleCrossing() {
+        List<AbstractField> pathToExit = new ArrayList<>();
         List<AbstractField> intersectionExits = new ArrayList<>();
         List<List<AbstractField>> pathToAllExits = new ArrayList<>();
-        List<AbstractField> currentPath = new ArrayList<>();
-
         AbstractField field = nextField;
 
         for (int i = 0; i < 4; i++) {
             int moveType = field.getMoveType();
-            currentPath.add(field);
+            pathToExit.add(field);
 
             switch (moveType) {
                 case 9:
                     intersectionExits.add(meshHandler.getCellAtPosition(field.getRow(), field.getColumn() + 1));
-                    pathToAllExits.add(new ArrayList<>(currentPath));
+                    pathToAllExits.add(new ArrayList<>(pathToExit));
                     break;
                 case 10:
                     intersectionExits.add(meshHandler.getCellAtPosition(field.getRow() - 1, field.getColumn()));
-                    pathToAllExits.add(new ArrayList<>(currentPath));
+                    pathToAllExits.add(new ArrayList<>(pathToExit));
                     break;
                 case 11:
                     intersectionExits.add(meshHandler.getCellAtPosition(field.getRow() + 1, field.getColumn()));
-                    pathToAllExits.add(new ArrayList<>(currentPath));
+                    pathToAllExits.add(new ArrayList<>(pathToExit));
                     break;
                 case 12:
                     intersectionExits.add(meshHandler.getCellAtPosition(field.getRow(), field.getColumn() - 1));
-                    pathToAllExits.add(new ArrayList<>(currentPath));
+                    pathToAllExits.add(new ArrayList<>(pathToExit));
                     break;
             }
             field = getNextField(field);
@@ -144,7 +145,57 @@ public class Car extends Thread {
     }
 
     private void checkNextFieldAndMove(List<List<AbstractField>> pathToAllExits, List<AbstractField> intersectionExits) {
+        List<AbstractField> pathToExit;
+        List<AbstractField> coveredFields = new ArrayList<>();
+        boolean allFieldsCovered = false;
 
+        do {
+            int randomChosedPath = new Random().nextInt(intersectionExits.size());
+            pathToExit = pathToAllExits.get(randomChosedPath);
+            pathToExit.add(intersectionExits.get(randomChosedPath));
+
+            for (AbstractField c : pathToExit) {
+                if (c.setCarToGo(this)) {
+                    coveredFields.add(c);
+                } else {
+                    for (AbstractField acquiredCell : coveredFields) {
+                        acquiredCell.reset();
+                    }
+
+                    coveredFields = new ArrayList<>();
+
+                    try {
+                        sleep(speed);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+
+            if (pathToExit.size() == coveredFields.size())
+                allFieldsCovered = true;
+            else
+                pathToExit.remove(intersectionExits.get(randomChosedPath));
+        } while (!allFieldsCovered);
+
+        for (AbstractField c : pathToExit) {
+
+            this.setColumn(c.getColumn());
+            this.setRow(c.getRow());
+            this.nextField = getNextField(c);
+            field.reset();
+            field = c;
+            updateFront();
+
+            if (c != pathToExit.get(pathToExit.size() - 1)) {
+                try {
+                    sleep(speed);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private AbstractField getNextField(AbstractField cell) {
@@ -188,12 +239,6 @@ public class Car extends Thread {
             moveType = cell.getMoveType();
         }
         return moveType;
-    }
-
-    private void moveCarToIntersectionExit(AbstractField c) {
-
-
-        updateFront();
     }
 
     public int getRow() {
