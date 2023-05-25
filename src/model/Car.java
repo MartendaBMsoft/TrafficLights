@@ -3,6 +3,9 @@ package model;
 import handler.MeshHandler;
 import model.abstractfactory.AbstractField;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Car extends Thread {
 
     private int row;
@@ -39,16 +42,28 @@ public class Car extends Thread {
     }
 
     private boolean checkLastCell() {
-        return field.isLastCell();
+        return field.isLastField();
     }
 
     private void moveCar() {
+        if (this.getField().isLastField()) {
+            stopRunning = true;
+            meshHandler.updateCarCount(this);
+            return;
+       }
+
+        if (nextField.isStopField()) {
+            handleCrossing();
+            stopRunning = true;
+            return ;
+        }
+
 
         AbstractField c = getNextField(this.field);
         c.setCar(this);
         this.setColumn(c.getColumn());
         this.setRow(c.getRow());
-        if (!c.isLastCell())
+        if (!c.isLastField())
             this.nextField = getNextField(c);
 
         field.reset();
@@ -56,11 +71,7 @@ public class Car extends Thread {
 
 //        this.setField(meshHandler.getCellAtPosition(this.getRow(), this.getColumn()));
 //
-//        if (this.getField().isLastCell()) {
-//            stopRunning = true;
-//            return ;
-//        }
-//
+
 //        int newRow = this.getRow();
 //        int newCol = this.getColumn();
 //
@@ -96,6 +107,46 @@ public class Car extends Thread {
 
         updateFront();
     }
+
+    private void handleCrossing() {
+        List<AbstractField> intersectionExits = new ArrayList<>();
+        List<List<AbstractField>> pathToAllExits = new ArrayList<>();
+        List<AbstractField> currentPath = new ArrayList<>();
+
+        AbstractField field = nextField;
+
+        for (int i = 0; i < 4; i++) {
+            int moveType = field.getMoveType();
+            currentPath.add(field);
+
+            switch (moveType) {
+                case 9:
+                    intersectionExits.add(meshHandler.getCellAtPosition(field.getRow(), field.getColumn() + 1));
+                    pathToAllExits.add(new ArrayList<>(currentPath));
+                    break;
+                case 10:
+                    intersectionExits.add(meshHandler.getCellAtPosition(field.getRow() - 1, field.getColumn()));
+                    pathToAllExits.add(new ArrayList<>(currentPath));
+                    break;
+                case 11:
+                    intersectionExits.add(meshHandler.getCellAtPosition(field.getRow() + 1, field.getColumn()));
+                    pathToAllExits.add(new ArrayList<>(currentPath));
+                    break;
+                case 12:
+                    intersectionExits.add(meshHandler.getCellAtPosition(field.getRow(), field.getColumn() - 1));
+                    pathToAllExits.add(new ArrayList<>(currentPath));
+                    break;
+            }
+            field = getNextField(field);
+        }
+
+        checkNextFieldAndMove(pathToAllExits, intersectionExits);
+    }
+
+    private void checkNextFieldAndMove(List<List<AbstractField>> pathToAllExits, List<AbstractField> intersectionExits) {
+
+    }
+
     private AbstractField getNextField(AbstractField cell) {
         int moveType;
 

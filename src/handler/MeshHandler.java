@@ -106,11 +106,11 @@ public class MeshHandler implements Handler {
         for (int i = 0; i < row; ++i) {
             for (int j = 0; j < col; ++j) {
                 if (setLastCell(new Integer[]{i, j})) {
-                    this.fields[i][j].setLastCell(true);
+                    this.fields[i][j].setLastField(true);
                 }
 
                 if (stopCells.contains(fields[i][j].getCarType())) {
-                    fields[i][j].setStopCell(true);
+                    fields[i][j].setStopField(true);
                 }
             }
         }

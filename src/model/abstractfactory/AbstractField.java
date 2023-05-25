@@ -34,17 +34,17 @@ public abstract class AbstractField {
 
     public abstract Icon getIcon();
 
-    public abstract boolean isLastCell();
+    public abstract boolean isLastField();
 
-    public abstract void setLastCell(boolean lastCell);
+    public abstract void setLastField(boolean lastCell);
 
     public abstract int getMoveType();
 
     public abstract void setIcon(ImageIcon icon);
 
-    public abstract boolean isStopCell();
+    public abstract boolean isStopField();
 
-    public abstract void setStopCell(boolean stopCell);
+    public abstract void setStopField(boolean stopCell);
 
 
 

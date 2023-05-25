@@ -52,19 +52,19 @@ public class ConcreteFieldSemaphore extends AbstractField {
         this.icon = icon;
     }
 
-    public boolean isStopCell() {
+    public boolean isStopField() {
         return stopCell;
     }
 
-    public void setStopCell(boolean stopCell) {
+    public void setStopField(boolean stopCell) {
         this.stopCell = stopCell;
     }
 
-    public boolean isLastCell() {
+    public boolean isLastField() {
         return lastCell;
     }
 
-    public void setLastCell(boolean lastCell) {
+    public void setLastField(boolean lastCell) {
         this.lastCell = lastCell;
     }
 
