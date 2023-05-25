@@ -102,13 +102,11 @@ public class SettingsFrame extends JFrame implements Observer {
         });
         buttonStart.setEnabled(false);
 
-        buttonStop = new JButton("Stop");
+        buttonStop = new JButton("Stop Creating");
         buttonStop.addActionListener((ActionEvent e) -> {
-            threadHandler.interrupt();
             handler.stop();
         });
         buttonStop.setEnabled(false);
-        buttonStop.setVisible(false);
 
         buttonEnd = new JButton("Exit");
         buttonEnd.addActionListener((ActionEvent e) -> {

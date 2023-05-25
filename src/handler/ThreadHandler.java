@@ -6,6 +6,10 @@ public class ThreadHandler extends Thread {
     private int carsQuantity;
     private int timer;
 
+    public MeshHandler getMeshHandler() {
+        return this.meshHandler;
+    }
+
     public void setCarsQuantity(int carsQuantity) {
         this.carsQuantity = carsQuantity;
     }

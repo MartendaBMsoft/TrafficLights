@@ -54,7 +54,9 @@ public class Car extends Thread {
             updateFront();
             field.reset();
 
-            createNewCar();
+            if (!meshHandler.isStopped()) {
+                createNewCar();
+            }
             return;
        }
 
